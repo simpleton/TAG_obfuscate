@@ -15,7 +15,9 @@ class NameBuilder(object):
         self.other_dict_len = len(self.other_letter_dict)
         self.cindex = 0
 
-    def create_tag(self):
+        self.cache = {}
+
+    def _create_tag(self):
         index = self.cindex
 
         result = self.first_letter_dict[index % self.first_dict_len]
@@ -26,3 +28,19 @@ class NameBuilder(object):
             index /= self.other_dict_len
         self.cindex += 1
         return result
+
+    def create_tag(self, key):
+        result = self.check_cache(key)
+        if result:
+            return result
+        else:
+            result = self._create_tag()
+            self.cache[key] = result
+            return result
+
+    def check_cache(self, key):
+        if key in self.cache.keys():
+            return self.cache.get(key)
+        else:
+            return None
+
