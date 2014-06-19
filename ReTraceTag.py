@@ -26,7 +26,7 @@ class Retrace(object):
             mlist = re.split('[\[\]]', line)
             if len(mlist) > 7:
                 original_tag = mlist[7]
-                print self.replace_tag(line, original_tag, self.mapping.get(original_tag))
+                print self.replace_tag(line, original_tag, self.mapping.get(original_tag)),
         fileinput.close()
 
     def replace_tag(self, line, original_tag, new_tag):
@@ -51,5 +51,3 @@ if __name__ == "__main__":
     retrace = Retrace("TagMapping.txt")
     for log_file in log_files:
         retrace.retrace(log_file)
-
-
