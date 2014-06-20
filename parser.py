@@ -2,7 +2,7 @@
 
 import lex
 import yacc
-from .model import *
+from model import *
 
 class MyLexer(object):
 
