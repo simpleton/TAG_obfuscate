@@ -22,6 +22,8 @@ public class MainActivity extends ListActivity {
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         Log.d(TAG, "onCreate");
+        Log.d(TAG, "onCreate");
+        Log.d(TAG, "onCreate");
         setListAdapter(new ArrayAdapter<String>(this, android.R.layout.simple_list_item_1, options));
     }
 

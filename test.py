@@ -3,13 +3,34 @@
 import parser
 from model import *
 
+g_var2value = {}
 
-def find_log_method(elems):
-    for elem in elems:
+def get_value(var):
+    # use string literal as tag
+    if var.startswith('\"'):
+        return var
+
+    global g_var2value
+    if var in g_var2value:
+        return g_var2value.get(var)
+    else:
+        raise Exception("can not find value in source code: %s" % var)
+
+def parse_type_value(elems):
+    global g_var2value
+    for elem in elems :
+        if type(elem) is FieldDeclaration:
+            for var_dec in elem.variable_declarators:
+                if type(var_dec.initializer) is Literal:
+                    g_var2value[var_dec.variable.name] = var_dec.initializer.value
+
+def find_log_method(method_elems):
+    for elem in method_elems:
         if type(elem) is MethodInvocation:
             if type(elem.target) is Name and elem.target.value == "Log":
                 tag, format_str, params = extract_arguments(elem)
-                print tag, format_str, params
+                tag_v = get_value(tag)
+                print tag_v, format_str, params
 
 def _extract_tag_value(elem):
     tag = elem.arguments[0]
@@ -18,7 +39,7 @@ def _extract_tag_value(elem):
     elif type(tag) is Literal:
         tag_v = tag.value
     else:
-        raise Exception("tag type error: %s", type(tag))
+        raise Exception("tag type error: %s" % type(tag))
     return tag_v
 
 def _extract_format_str(elem):
@@ -47,27 +68,8 @@ if __name__ == "__main__":
 
     tree = parser.parse_file(file('./java_src/MainActivity.java'))
     for elem in tree.type_declarations:
+        # parse all type declaration's value
+        parse_type_value(elem.body)
         for elem1 in elem.body:
             if type(elem1) is MethodDeclaration:
                 find_log_method(elem1.body)
-"""
-                for elem2 in elem1.body:
-                    if type(elem2) is MethodInvocation:
-                        if type(elem2.target) is Name:
-                            print elem2.name
-                            print elem2.target.value
-                            print elem2.arguments
-                            if len(elem2.arguments) == 2:
-                                tag = elem2.arguments[0]
-                                if type(tag) is Name:
-                                    print tag.value
-                            if len(elem2.arguments) == 3:
-                                tag = elem2.arguments[0]
-                                if type(tag) is Name:
-                                    print tag.value
-
-if type(elem1) is FieldDeclaration:
-                for elem2 in elem1.variable_declarators:
-                    if elem2.variable.name.startswith("TAG"):
-                        print elem2.initializer.value
-"""
