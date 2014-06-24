@@ -17,7 +17,7 @@ public class MainActivity extends ListActivity {
     public static final String[] options = {
             "firstView", "ListView"
     };
-    private static final String TAG = "MainActivity";
+
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
@@ -29,6 +29,7 @@ public class MainActivity extends ListActivity {
     protected void onListItemClick(ListView l, View v, int position, long id) {
         Intent intent;
         Log.d(TAG, "onListItemClick%s", A);
+        Log.v("test", "onListItemClick%s", A);
         switch (position) {
             default:
             case 0:
@@ -47,4 +48,5 @@ public class MainActivity extends ListActivity {
     class Test  {
         public static final String TAG = "Test2";
     }
+    private static final String TAG = "MainActivity";
 }
