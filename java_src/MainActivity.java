@@ -56,7 +56,9 @@ public class MainActivity extends ListActivity {
 
         public void test1() {
             private final String TAG = "test1";
-            Log.i(Test.TAG, "aaa%s", AA);
+            private final String TAG1 = "test1";
+            Log.i(TAG+"test", "aaa%s", AA);
+            Log.i(TAG+TAG1, "bbb%s", AA);
         }
         public static final String TAG = "Test2";
     }
