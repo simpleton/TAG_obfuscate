@@ -12,7 +12,7 @@ class Node(object):
         self.key = ""
         node = self
         while node != None:
-            self.key += node.name
+            self.key = ".".join([node.name,self.key])
             node = node.father
 
 def get_value(var, domain):
@@ -76,6 +76,15 @@ def extract_arguments(elem):
                 print type(arg)
     return tag_v, format_str, arguments
 
+def parse_class_body(body, father):
+    for elem1 in body:
+        if type(elem1) is MethodDeclaration:
+            node = Node(elem1.name, father)
+            find_log_method(elem1.body, node)
+        elif type(elem1) is ClassDeclaration:
+            node = Node(elem1.name, father)
+            parse_type_value(elem1.body, node)
+            parse_class_body(elem1.body, node)
 
 if __name__ == "__main__":
     parser = parser.Parser()
@@ -85,7 +94,4 @@ if __name__ == "__main__":
         # parse all type declaration's value
         root = Node(elem.name, None)
         parse_type_value(elem.body, root)
-        for elem1 in elem.body:
-            if type(elem1) is MethodDeclaration:
-                node = Node(elem1.name, root)
-                find_log_method(elem1.body, node)
+        parse_class_body(elem.body, root)

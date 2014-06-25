@@ -50,7 +50,19 @@ public class MainActivity extends ListActivity {
     }
 
     class Test  {
+        public void test() {
+            Log.e(TAG, "test");
+        }
+
+        public void test1() {
+            private final String TAG = "test1";
+            Log.i(Test.TAG, "aaa%s", AA);
+        }
         public static final String TAG = "Test2";
     }
     private static final String TAG = "MainActivity111";
+}
+
+class Test1 {
+    public static final String TAG_TEST = "Sim Test";
 }
