@@ -110,8 +110,8 @@ class TagParser(object):
         for elem in tree.type_declarations:
         # parse all type declaration's value
             root = Node(elem.name, None)
-            tag_parser.parse_type_value(elem.body, root)
-            tag_parser.parse_class_body(elem.body, root)
+            self.parse_type_value(elem.body, root)
+            self.parse_class_body(elem.body, root)
         return self.tags
 
 if __name__ == "__main__":
