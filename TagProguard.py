@@ -46,7 +46,7 @@ class TagProguard(object):
             if ret and len(ret) > 1:
                 # this is a little tricky, we assume hardcode tag string never as  same as log format string
                 original_tag = ret[1].value
-                new_tag = self.add_quote(self.name_builder.create_tag(original_tag))
+                new_tag = self._add_quote(self.name_builder.create_tag(original_tag))
                 print self.replace_tag(line, original_tag, new_tag),
             else:
                 if len(line) > 0:
@@ -64,21 +64,19 @@ class TagProguard(object):
         else:
             return string
 
-    def add_quote(self, string):
+    def _add_quote(self, string):
         if string.startswith('"'):
             return string
         else:
             return "".join(['"', string, '"'])
 
 def build_reg(tag_k, tag_v):
-
     if (tag_k.startswith('"')):
         # hardcode string in log function
         str = r'.*Log.*\(\s*%s' % tag_v
     else:
         # use variable
         str = r'.*String\s+%s\s*=\s*%s' % (tag_k, tag_v)
-    print str
     return TagRegex(re.compile(str), tag_k, tag_v)
 
 if __name__ == "__main__":

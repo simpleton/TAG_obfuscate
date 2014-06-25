@@ -3,7 +3,7 @@
 import parser
 from model import *
 
-
+DEBUG = False
 
 class Node(object):
     def __init__(self, name, father):
@@ -63,7 +63,8 @@ class TagParser(object):
                     tag = Tag(tag_k, tag_v)
                     if tag not in self.tags:
                         self.tags.append(tag)
-                    print tag_v, format_str, params
+                    if DEBUG:
+                        print tag_v, format_str, params
 
     def _extract_tag_value(self, elem):
         tag = elem.arguments[0]
@@ -92,7 +93,7 @@ class TagParser(object):
                 if type(arg) is Name:
                     arguments.append(arg.value)
                 else:
-                    print type(arg)
+                    raise Exception("tag type error: %s" % type(arg))
         return tag_v, format_str, arguments
 
     def parse_class_body(self, body, father):
