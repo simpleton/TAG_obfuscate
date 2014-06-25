@@ -33,7 +33,7 @@ public class MainActivity extends ListActivity {
         Intent intent;
 
         Log.d(TAG, "onListItemClick%s", A);
-        Log.v("test", "onListItemClick%s", A);
+        Log.v("test", "test onListItemClick%s test", A);
         switch (position) {
             default:
             case 0:
