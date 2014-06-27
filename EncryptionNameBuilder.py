@@ -15,3 +15,8 @@ class EncryptionNameBuilder(NameBuilder):
         encrypt_key = self.skey.encrypt(key)
         new_key = base64.b64encode(encrypt_key)
         return new_key
+
+    def decrypt_tag(self, encrypted_tag):
+        encrypt_key = base64.b64decode(encrypted_tag)
+        original_tag = self.skey.decrypt(encrypt_key)
+        return original_tag
