@@ -1,10 +1,12 @@
-#!/usr/bin/python
+#!/usr/bin/env python
 
 import os
 import fnmatch
 import re
 import fileinput
 from NameBuilder import NameBuilder
+from DictNameBuilder import DictNameBuilder
+from EncryptionNameBuilder import EncryptionNameBuilder
 from TagParser import TagParser
 
 class TagRegex(object):
@@ -25,7 +27,9 @@ class TagProguard(object):
     use some obfuscated string to replace TAG string in java source code
     """
     def __init__(self, fd, reg_list):
-        self.name_builder = NameBuilder()
+#        self.name_builder = NameBuilder()
+        self.name_builder = DictNameBuilder()
+#        self.name_builder = EncryptionNameBuilder()
         self.mappingfd = fd
         self.reg_list = reg_list
 
@@ -81,6 +85,7 @@ def build_reg(tag_k, tag_v):
 
 if __name__ == "__main__":
     files = find_all_files_with_suffix("./", "*.java")
+    print files
     #regex = re.compile(r'.*String\s+TAG\d*\s*=\s*\"(.*)\"')
     tag_parser = None
     with open("TagMapping.txt", 'w') as tag_fd:
