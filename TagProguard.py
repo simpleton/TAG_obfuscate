@@ -27,9 +27,8 @@ class TagProguard(object):
     use some obfuscated string to replace TAG string in java source code
     """
     def __init__(self, fd, reg_list):
-#        self.name_builder = NameBuilder()
-        self.name_builder = DictNameBuilder()
-#        self.name_builder = EncryptionNameBuilder()
+#        self.name_builder = DictNameBuilder()
+        self.name_builder = EncryptionNameBuilder()
         self.mappingfd = fd
         self.reg_list = reg_list
 
@@ -84,12 +83,16 @@ def build_reg(tag_k, tag_v):
     return TagRegex(re.compile(str), tag_k, tag_v)
 
 if __name__ == "__main__":
-    files = find_all_files_with_suffix("./", "*.java")
-    print files
-    #regex = re.compile(r'.*String\s+TAG\d*\s*=\s*\"(.*)\"')
+    folder = "/Users/sim/github/AutoMerge/svn-merger/tmp/RB-5.4"
+    files = find_all_files_with_suffix(folder, "*.java")
     tag_parser = None
     with open("TagMapping.txt", 'w') as tag_fd:
         for file in files:
+            # ignore hidden files
+            if any (i.startswith('.') for i in file.split('/')):
+                continue
+
+            file = os.path.join(folder, file)
             tag_parser = TagParser()
             regex = []
             for tag in tag_parser.parse(file):

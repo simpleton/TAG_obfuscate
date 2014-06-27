@@ -32,6 +32,7 @@ class TagParser(object):
         self.tags = []
         self.format_strs = []
         self.source_parser = source_parser
+        self.log_method_list = ['i', 'd', 'e', 'v', 'f', 'w', 'printDebugStack', 'printInfoStack', 'printErrStackTrace']
 
     def get_value(self, var, domain):
         # use string literal as tag
@@ -57,17 +58,23 @@ class TagParser(object):
         self.parse_type_value(method_elems, domain)
         for elem in method_elems:
             if type(elem) is MethodInvocation:
-                if type(elem.target) is Name and elem.target.value == "Log":
-                    tag_k, format_str, params = self.extract_arguments(elem)
+                if type(elem.target) is Name and elem.target.value == "Log" and elem.name in self.log_method_list:
+                    tag_k, format_str = self.extract_arguments(elem)
+
+                    #FIXME: didn't support reference other class's tag
+                    if '.' in tag_k:
+                        continue
+
                     tag_v = self.get_value(tag_k, domain)
                     tag = Tag(tag_k, tag_v)
                     if tag not in self.tags:
                         self.tags.append(tag)
                     if DEBUG:
-                        print tag_v, format_str, params
+                        print tag_v, format_str
 
     def _extract_tag_value(self, elem):
         if hasattr(elem , 'arguments'):
+            print elem.arguments
             tag = elem.arguments[0]
         else:
             tag = elem
@@ -95,30 +102,31 @@ class TagParser(object):
             format_str= self._extract_format_str(elem)
         if len(elem.arguments) > 2:
             format_str = self._extract_format_str(elem)
-            for arg in elem.arguments[2:]:
-                if type(arg) is Name:
-                    arguments.append(arg.value)
-                else:
-                    raise Exception("tag type error: %s" % type(arg))
-        return tag_v, format_str, arguments
+        return tag_v, format_str
 
     def parse_class_body(self, body, father):
         for elem1 in body:
+            if hasattr(elem1, 'body') and elem1.body == None:
+                continue
+
             if type(elem1) is MethodDeclaration:
                 node = Node(elem1.name, father)
                 self.find_log_method(elem1.body, node)
+
             elif type(elem1) is ClassDeclaration:
                 node = Node(elem1.name, father)
                 self.parse_type_value(elem1.body, node)
                 self.parse_class_body(elem1.body, node)
 
     def parse(self, file):
+        print file
         tree = self.source_parser.parse_file(file)
         for elem in tree.type_declarations:
-        # parse all type declaration's value
-            root = Node(elem.name, None)
-            self.parse_type_value(elem.body, root)
-            self.parse_class_body(elem.body, root)
+            # parse all type declaration's value
+            if hasattr(elem, 'name'):
+                root = Node(elem.name, None)
+                self.parse_type_value(elem.body, root)
+                self.parse_class_body(elem.body, root)
         return self.tags
 
 if __name__ == "__main__":
