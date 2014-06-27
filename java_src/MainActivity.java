@@ -21,7 +21,7 @@ public class MainActivity extends ListActivity {
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
-        public String TAG = "AAA";
+        public String TAG = "a";
         Log.d(TAG, "onCreate");
         Log.d(TAG, "onCreate");
         Log.d(TAG, "onCreate");
@@ -33,7 +33,7 @@ public class MainActivity extends ListActivity {
         Intent intent;
 
         Log.d(TAG, "onListItemClick%s", A);
-        Log.v("test", "test onListItemClick%s test", A);
+        Log.v("b", "test onListItemClick%s test", A);
         switch (position) {
             default:
             case 0:
@@ -55,14 +55,14 @@ public class MainActivity extends ListActivity {
         }
 
         public void test1() {
-            private final String TAG = "test1";
+            private final String TAG = "c";
             private final String TAG1 = "test1";
             Log.i(TAG+"test", "aaa%s", AA);
             Log.i(TAG+TAG1, "bbb%s", AA);
         }
-        public static final String TAG = "Test2";
+        public static final String TAG = "d";
     }
-    private static final String TAG = "MainActivity111";
+    private static final String TAG = "e";
 }
 
 class Test1 {

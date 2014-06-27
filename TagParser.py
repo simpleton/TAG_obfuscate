@@ -67,11 +67,17 @@ class TagParser(object):
                         print tag_v, format_str, params
 
     def _extract_tag_value(self, elem):
-        tag = elem.arguments[0]
+        if hasattr(elem , 'arguments'):
+            tag = elem.arguments[0]
+        else:
+            tag = elem
         if type(tag) is Name:
             tag_v = tag.value
         elif type(tag) is Literal:
             tag_v = tag.value
+        elif type(tag) is Additive:
+            # FIXME: only extract most left value of the expression
+            tag_v = self._extract_tag_value(tag.lhs)
         else:
             raise Exception("tag type error: %s" % type(tag))
         return tag_v
