@@ -4,10 +4,18 @@ import os
 import fnmatch
 import re
 import fileinput
+import time
 from NameBuilder import NameBuilder
 from DictNameBuilder import DictNameBuilder
 from EncryptionNameBuilder import EncryptionNameBuilder
 from TagParser import TagParser
+
+DEBUG = True
+
+def _print( *params ):
+    if DEBUG:
+        print params
+    return
 
 class TagRegex(object):
     def __init__(self, reg, key, value):
@@ -80,12 +88,15 @@ def build_reg(tag_k, tag_v):
     else:
         # use variable
         str = r'.*String\s+%s\s*=\s*%s' % (tag_k, tag_v)
+    _print(tag_k , tag_v)
     return TagRegex(re.compile(str), tag_k, tag_v)
 
 if __name__ == "__main__":
     folder = "/Users/sim/github/AutoMerge/svn-merger/tmp/RB-5.4"
     files = find_all_files_with_suffix(folder, "*.java")
     tag_parser = None
+    print "Starting Tag Proguard......"
+    start_time = time.time()
     with open("TagMapping.txt", 'w') as tag_fd:
         for file in files:
             # ignore hidden files
@@ -99,3 +110,6 @@ if __name__ == "__main__":
                 regex.append(build_reg(tag.name, tag.value))
             tag_progard = TagProguard(tag_fd, regex)
             tag_progard.obfuscate(file)
+    now = time.time()
+    cost_time = now - start_time
+    print "Finish Tag Proguard. Totally cost %d second" % int(cost_time)

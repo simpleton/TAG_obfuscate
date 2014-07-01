@@ -5,6 +5,10 @@ from model import *
 
 DEBUG = False
 
+def _print( *params ):
+    if DEBUG:
+        print params
+
 class Node(object):
     def __init__(self, name, father):
         self.name = name
@@ -45,7 +49,8 @@ class TagParser(object):
         elif domain.father != None:
             return self.get_value(var, domain.father)
         else:
-            raise Exception("can not find value in source code: %s" % var)
+            return None
+#            raise Exception("can not find value in source code: %s" % var)
 
     def parse_type_value(self, elems, domain):
         for elem in elems:
@@ -64,17 +69,19 @@ class TagParser(object):
                     #FIXME: didn't support reference other class's tag
                     if '.' in tag_k:
                         continue
-
                     tag_v = self.get_value(tag_k, domain)
+                    #FIXME: ignore didn't init TAG's value
+                    if tag_v == None:
+                        continue
+
                     tag = Tag(tag_k, tag_v)
                     if tag not in self.tags:
                         self.tags.append(tag)
-                    if DEBUG:
-                        print tag_v, format_str
+                    _print(tag_v, format_str)
 
     def _extract_tag_value(self, elem):
         if hasattr(elem , 'arguments'):
-            print elem.arguments
+            _print(elem.arguments)
             tag = elem.arguments[0]
         else:
             tag = elem
@@ -119,7 +126,7 @@ class TagParser(object):
                 self.parse_class_body(elem1.body, node)
 
     def parse(self, file):
-        print file
+        _print( file )
         tree = self.source_parser.parse_file(file)
         for elem in tree.type_declarations:
             # parse all type declaration's value
@@ -128,6 +135,7 @@ class TagParser(object):
                 self.parse_type_value(elem.body, root)
                 self.parse_class_body(elem.body, root)
         return self.tags
+
 
 if __name__ == "__main__":
     tag_parser = TagParser()
