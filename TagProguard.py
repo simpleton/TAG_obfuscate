@@ -93,7 +93,11 @@ def build_reg(tag_k, tag_v):
     return TagRegex(re.compile(str), tag_k, tag_v)
 
 if __name__ == "__main__":
-    folder = "/Users/sim/github/AutoMerge/svn-merger/tmp/RB-5.4"
+    if not len(sys.argv) > 1:
+        print "Please pass the source code's root folder"
+        exit(1)
+
+    folder = sys.argv[1]
     files = find_all_files_with_suffix(folder, "*.java")
     tag_parser = None
     print "Starting Tag Proguard......"

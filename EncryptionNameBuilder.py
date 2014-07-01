@@ -3,11 +3,13 @@
 from NameBuilder import *
 from pyDes import *
 import base64
+import os
 
 class EncryptionNameBuilder(NameBuilder):
     def __init__(self):
         NameBuilder.__init__(self)
-        with open("skey.key", "r") as fd:
+        folder = os.path.dirname(os.path.realpath(__file__))
+        with open(os.path.join(folder, "skey.key"), "r") as fd:
             self.skey_string = fd.read().strip()
         self.skey = des(self.skey_string, CBC, "\0\0\0\0\0\0\0\0", pad=None, padmode=PAD_PKCS5)
 
