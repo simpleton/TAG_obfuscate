@@ -5,12 +5,13 @@ import fnmatch
 import re
 import fileinput
 import time
+import sys
 from NameBuilder import NameBuilder
 from DictNameBuilder import DictNameBuilder
 from EncryptionNameBuilder import EncryptionNameBuilder
 from TagParser import TagParser
 
-DEBUG = True
+DEBUG = False
 
 def _print( *params ):
     if DEBUG:
@@ -102,7 +103,6 @@ if __name__ == "__main__":
             # ignore hidden files
             if any (i.startswith('.') for i in file.split('/')):
                 continue
-
             file = os.path.join(folder, file)
             tag_parser = TagParser()
             regex = []
