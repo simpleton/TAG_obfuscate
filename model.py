@@ -194,7 +194,8 @@ class MethodDeclaration(SourceElement):
         if visitor.visit_MethodDeclaration(self):
             if not self.body == None:
                 for e in self.body:
-                    e.accept(visitor)
+                    if hasattr(e, 'accept'):
+                        e.accept(visitor)
 
 
 class FormalParameter(SourceElement):
@@ -459,8 +460,10 @@ class BinaryExpression(Expression):
 
     def accept(self, visitor):
         if visitor.visit_BinaryExpression(self):
-            self.lhs.accept(visitor)
-            self.rhs.accept(visitor)
+            if hasattr(self.lhs, 'accept'):
+                self.lhs.accept(visitor)
+            if hasattr(self.rhs, 'accept'):
+                self.rhs.accept(visitor)
 
 
 class Assignment(BinaryExpression):
@@ -594,7 +597,7 @@ class MethodInvocation(Expression):
     def accept(self, visitor):
         if (visitor.visit_MethodInvocation(self)):
             if self.arguments is not None:
-                [arg.accept(visitor) for arg in self.arguments]
+                [arg.accept(visitor) for arg in self.arguments if hasattr(arg, 'accept')]
 
 
 class IfThenElse(Statement):
@@ -608,9 +611,9 @@ class IfThenElse(Statement):
 
     def accept(self, visitor):
         if (visitor.visit_IfThenElse(self)):
-            if self.if_true is not None:
+            if self.if_true is not None and hasattr(self.if_true, 'accept'):
                 self.if_true.accept(visitor)
-            if self.if_false is not None:
+            if self.if_false is not None and hasattr(self.if_false, 'accept'):
                 self.if_false.accept(visitor)
 
 
@@ -872,7 +875,7 @@ class InstanceCreation(Expression):
 
     def accept(self, visitor):
         if (visitor.visit_InstanceCreation(self)):
-            [b.accept(visitor) for b in self.body]
+            [b.accept(visitor) for b in self.body if hasattr(b, 'accept')]
 
 
 class FieldAccess(Expression):

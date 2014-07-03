@@ -108,6 +108,7 @@ if __name__ == "__main__":
             # ignore hidden files
             if any (i.startswith('.') for i in file.split('/')):
                 continue
+            _print(file)
             file = os.path.join(folder, file)
             tag_parser = TagParser()
             regex = []
