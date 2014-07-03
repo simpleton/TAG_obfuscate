@@ -54,7 +54,7 @@ class TagProguard(object):
                 original_tag = tagregex.value
                 if original_tag is None:
                     original_tag = result.group(1)
-
+                original_tag = self._add_quote(original_tag)
                 new_tag = self._add_quote(self.name_builder.create_tag(original_tag))
                 print self.replace_tag(line, original_tag, new_tag),
             else:
