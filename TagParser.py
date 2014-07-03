@@ -3,7 +3,7 @@
 import parser
 from model import *
 
-DEBUG = False
+DEBUG = True
 
 def _print( *params ):
     if DEBUG:
@@ -53,15 +53,21 @@ class TagParser(object):
 #            raise Exception("can not find value in source code: %s" % var)
 
     def parse_type_value(self, elems, domain):
+        """
+        parse type value
+        """
         for elem in elems:
             if type(elem) is FieldDeclaration or type(elem) is VariableDeclaration:
                 for var_dec in elem.variable_declarators:
                     if type(var_dec.initializer) is Literal:
                         self.var2value["".join([domain.key, var_dec.variable.name])] = var_dec.initializer.value
+        return ;
+
 
     def find_log_method(self, method_elems, domain):
         self.parse_type_value(method_elems, domain)
         for elem in method_elems:
+            print elem
             if type(elem) is MethodInvocation:
                 if type(elem.target) is Name and elem.target.value == "Log" and elem.name in self.log_method_list:
                     tag_k, format_str = self.extract_arguments(elem)
@@ -124,6 +130,8 @@ class TagParser(object):
                 node = Node(elem1.name, father)
                 self.parse_type_value(elem1.body, node)
                 self.parse_class_body(elem1.body, node)
+
+        return ;
 
     def parse(self, file):
         _print( file )

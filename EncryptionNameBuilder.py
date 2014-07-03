@@ -11,7 +11,7 @@ class EncryptionNameBuilder(NameBuilder):
         folder = os.path.dirname(os.path.realpath(__file__))
         with open(os.path.join(folder, "skey.key"), "r") as fd:
             self.skey_string = fd.read().strip()
-        self.skey = des(self.skey_string, CBC, "\0\0\0\0\0\0\0\0", pad=None, padmode=PAD_PKCS5)
+        self.skey = des(self.skey_string, CBC, "manifest", pad=None, padmode=PAD_PKCS5)
 
     def _create_tag(self, key):
         encrypt_key = self.skey.encrypt(key)

@@ -11,7 +11,7 @@ from DictNameBuilder import DictNameBuilder
 from EncryptionNameBuilder import EncryptionNameBuilder
 from TagParser import TagParser
 
-DEBUG = False
+DEBUG = True
 
 def _print( *params ):
     if DEBUG:
