@@ -592,7 +592,9 @@ class MethodInvocation(Expression):
         self.target = target
 
     def accept(self, visitor):
-        visitor.visit_MethodInvocation(self)
+        if (visitor.visit_MethodInvocation(self)):
+            if self.arguments is not None:
+                [arg.accept(visitor) for arg in self.arguments]
 
 
 class IfThenElse(Statement):
@@ -605,7 +607,12 @@ class IfThenElse(Statement):
         self.if_false = if_false
 
     def accept(self, visitor):
-        visitor.visit_IfThenElse(self)
+        if (visitor.visit_IfThenElse(self)):
+            if self.if_true is not None:
+                self.if_true.accept(visitor)
+            if self.if_false is not None:
+                self.if_false.accept(visitor)
+
 
 
 class While(Statement):
@@ -864,7 +871,8 @@ class InstanceCreation(Expression):
         self.enclosed_in = enclosed_in
 
     def accept(self, visitor):
-        visitor.visit_InstanceCreation(self)
+        if (visitor.visit_InstanceCreation(self)):
+            [b.accept(visitor) for b in self.body]
 
 
 class FieldAccess(Expression):

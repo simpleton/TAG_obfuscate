@@ -30,6 +30,7 @@ import com.tencent.mm.sdk.platformtools.Log;
 
 					@Override
 					public void run() {
+                                            Log.w(TAG, "hello hello hello");
 						helper.doJob(info);
 					}
 				});
@@ -80,7 +81,7 @@ import com.tencent.mm.sdk.platformtools.Log;
 		return "";
 	}
 
-	/* package */ interface IReportHelper {
+	/* Package */ interface IReportHelper {
 
 		int doJob(IReportInfo info);
 
