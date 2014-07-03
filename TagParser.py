@@ -1,34 +1,16 @@
 #!/usr/bin/env python
 
 import parser
+from TagVisitor import TagVisitor
 from model import *
+from Tag import Tag
+from Node import Node
 
-DEBUG = True
+DEBUG = False
 
 def _print( *params ):
     if DEBUG:
         print params
-
-class Node(object):
-    def __init__(self, name, father):
-        self.name = name
-        self.father = father
-        self.key = ""
-        node = self
-        while node != None:
-            self.key = ".".join([node.name,self.key])
-            node = node.father
-
-class Tag(object):
-    def __init__(self, name, value):
-        self.name = name
-        self.value = value
-
-    def __str__(self):
-        return str(self.__dict__)
-
-    def __eq__(self, other):
-        return self.name == other.name and self.value == other.value
 
 class TagParser(object):
     def __init__(self, source_parser=parser.Parser()):
@@ -36,7 +18,8 @@ class TagParser(object):
         self.tags = []
         self.format_strs = []
         self.source_parser = source_parser
-        self.log_method_list = ['i', 'd', 'e', 'v', 'f', 'w', 'printDebugStack', 'printInfoStack', 'printErrStackTrace']
+        self.visitor = TagVisitor()
+
 
     def get_value(self, var, domain):
         # use string literal as tag
@@ -67,7 +50,7 @@ class TagParser(object):
     def find_log_method(self, method_elems, domain):
         self.parse_type_value(method_elems, domain)
         for elem in method_elems:
-            print elem
+
             if type(elem) is MethodInvocation:
                 if type(elem.target) is Name and elem.target.value == "Log" and elem.name in self.log_method_list:
                     tag_k, format_str = self.extract_arguments(elem)
@@ -84,38 +67,7 @@ class TagParser(object):
                     if tag not in self.tags:
                         self.tags.append(tag)
                     _print(tag_v, format_str)
-
-    def _extract_tag_value(self, elem):
-        if hasattr(elem , 'arguments'):
-            _print(elem.arguments)
-            tag = elem.arguments[0]
-        else:
-            tag = elem
-        if type(tag) is Name:
-            tag_v = tag.value
-        elif type(tag) is Literal:
-            tag_v = tag.value
-        elif type(tag) is Additive:
-            # FIXME: only extract most left value of the expression
-            tag_v = self._extract_tag_value(tag.lhs)
-        else:
-            raise Exception("tag type error: %s" % type(tag))
-        return tag_v
-
-    def _extract_format_str(self, elem):
-        format_str = elem.arguments[1]
-        if type(format_str) is Literal:
-            return format_str.value
-
-    def extract_arguments(self, elem):
-        tag_v = self._extract_tag_value(elem)
-        format_str = None
-        arguments = []
-        if len(elem.arguments) == 2:
-            format_str= self._extract_format_str(elem)
-        if len(elem.arguments) > 2:
-            format_str = self._extract_format_str(elem)
-        return tag_v, format_str
+        return;
 
     def parse_class_body(self, body, father):
         for elem1 in body:
@@ -136,13 +88,8 @@ class TagParser(object):
     def parse(self, file):
         _print( file )
         tree = self.source_parser.parse_file(file)
-        for elem in tree.type_declarations:
-            # parse all type declaration's value
-            if hasattr(elem, 'name'):
-                root = Node(elem.name, None)
-                self.parse_type_value(elem.body, root)
-                self.parse_class_body(elem.body, root)
-        return self.tags
+        tree.accept(self.visitor)
+        return self.visitor.tags
 
 
 if __name__ == "__main__":

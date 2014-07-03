@@ -6,12 +6,13 @@ import re
 import fileinput
 import time
 import sys
+import util
 from NameBuilder import NameBuilder
 from DictNameBuilder import DictNameBuilder
 from EncryptionNameBuilder import EncryptionNameBuilder
 from TagParser import TagParser
 
-DEBUG = True
+DEBUG = False
 
 def _print( *params ):
     if DEBUG:
@@ -23,13 +24,6 @@ class TagRegex(object):
         self.reg = reg
         self.key = key
         self.value = value
-
-def find_all_files_with_suffix(relative_path, suffix):
-    matches = []
-    for root, firnames, filenames in os.walk(relative_path):
-        for filename in fnmatch.filter(filenames, suffix):
-            matches.append(os.path.relpath(os.path.join(root, filename), relative_path))
-    return matches
 
 class TagProguard(object):
     """
@@ -50,14 +44,17 @@ class TagProguard(object):
             result = r.reg.match(line)
             if result:
                 return result, r
+        return None, None
 
     def obfuscate(self, filepath):
         for line in fileinput.input(filepath, inplace=1, mode="rb"):
 #            if any(r.reg.match(line) for r in self.reg_list):
-            ret = self.match(line)
-            if ret and len(ret) > 1:
-                # this is a little tricky, we assume hardcode tag string never as  same as log format string
-                original_tag = ret[1].value
+            result , tagregex  = self.match(line)
+            if result is not None:
+                original_tag = tagregex.value
+                if original_tag is None:
+                    original_tag = result.group(1)
+
                 new_tag = self._add_quote(self.name_builder.create_tag(original_tag))
                 print self.replace_tag(line, original_tag, new_tag),
             else:
@@ -85,10 +82,14 @@ class TagProguard(object):
 def build_reg(tag_k, tag_v):
     if (tag_k.startswith('"')):
         # hardcode string in log function
-        str = r'.*Log.*\(\s*%s' % tag_v
+        str = r'.*Log.*\(\s*(%s)' % tag_k
     else:
         # use variable
-        str = r'.*String\s+%s\s*=\s*%s' % (tag_k, tag_v)
+        #str = r'.*String\s+%s\s*=\s*%s' % (tag_k, tag_v)
+        if tag_v is None:
+            str = r'.*String\s+{}\s*=\s*\"(.*)\"'.format(tag_k)
+        else:
+            str = r'.*String\s+{}\s*=\s*{}'.format(tag_k, tag_v)
     _print(tag_k , tag_v)
     return TagRegex(re.compile(str), tag_k, tag_v)
 
@@ -98,7 +99,7 @@ if __name__ == "__main__":
         exit(1)
 
     folder = sys.argv[1]
-    files = find_all_files_with_suffix(folder, "*.java")
+    files = util.find_all_files_with_suffix(folder, "*.java")
     tag_parser = None
     print "Starting Tag Proguard......"
     start_time = time.time()
