@@ -19,11 +19,6 @@ def _print( *params ):
         print params
     return
 
-class TagRegex(object):
-    def __init__(self, reg, key, value):
-        self.reg = reg
-        self.key = key
-        self.value = value
 
 class TagProguard(object):
     """
@@ -64,7 +59,7 @@ class TagProguard(object):
 
     def replace_tag(self, line, original_tag, new_tag):
         result = line.replace(original_tag, new_tag)
-        self.write_map_log(tag_fd, original_tag, new_tag, line)
+        self.write_map_log(self.mappingfd, original_tag, new_tag, line)
         return result
 
     def _extract_quote(self, string):
@@ -78,44 +73,3 @@ class TagProguard(object):
             return string
         else:
             return "".join(['"', string, '"'])
-
-def build_reg(tag_k, tag_v):
-    if (tag_k.startswith('"')):
-        # hardcode string in log function
-        str = r'.*Log.*\(\s*(%s)' % tag_k
-    else:
-        # use variable
-        #str = r'.*String\s+%s\s*=\s*%s' % (tag_k, tag_v)
-        if tag_v is None:
-            str = r'.*String\s+{}\s*=\s*\"(.*)\"'.format(tag_k)
-        else:
-            str = r'.*String\s+{}\s*=\s*{}'.format(tag_k, tag_v)
-    _print(tag_k , tag_v)
-    return TagRegex(re.compile(str), tag_k, tag_v)
-
-if __name__ == "__main__":
-    if not len(sys.argv) > 1:
-        print "Please pass the source code's root folder"
-        exit(1)
-
-    folder = sys.argv[1]
-    files = util.find_all_files_with_suffix(folder, "*.java")
-    tag_parser = None
-    print "Starting Tag Proguard......"
-    start_time = time.time()
-    with open("TagMapping.txt", 'w') as tag_fd:
-        for file in files:
-            # ignore hidden files
-            if any (i.startswith('.') for i in file.split('/')):
-                continue
-            _print(file)
-            file = os.path.join(folder, file)
-            tag_parser = TagParser()
-            regex = []
-            for tag in tag_parser.parse(file):
-                regex.append(build_reg(tag.name, tag.value))
-            tag_progard = TagProguard(tag_fd, regex)
-            tag_progard.obfuscate(file)
-    now = time.time()
-    cost_time = now - start_time
-    print "Finish Tag Proguard. Totally cost %d second" % int(cost_time)
