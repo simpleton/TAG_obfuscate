@@ -2,6 +2,7 @@
 import os
 import fileinput
 import re
+from Replacement import Replacement
 
 class RetraceWorker(object):
     def __init__(self, retrace_file):
@@ -24,9 +25,6 @@ class RetraceWorker(object):
 
     def replace_tag(self, line, original_tag, new_tag):
         if new_tag:
-            original_line = line
-            repl =  Replacement('[%s]' % new_tag)
-            result = re.sub('\[%s\]' % original_tag, repl, line)
+            return line.replace(original_tag, new_tag)
         else:
-            result = line
-        return result
+            return line

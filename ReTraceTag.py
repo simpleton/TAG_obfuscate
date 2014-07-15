@@ -3,7 +3,6 @@ import os
 import fileinput
 import re
 import util
-from Replacement import Replacement
 from DictReTraceTag import DictRetraceWorker
 from EncryptionReTraceTag import EncryptionRetraceWorker
 
@@ -21,11 +20,11 @@ class Retrace(object):
             log_files.extend(util.find_all_files_with_suffix(self.root_folder, suffix))
 
         for log_file in log_files:
-            retrace.retrace(log_file)
+            self.worker.retrace(log_file)
         return;
 
 if __name__ == "__main__":
-#    worker = EncryptionRetraceWorker(retrace_file = "TagMapping.txt")
-    worker = DictRetraceWorker(retrace_file = "TagMapping.txt")
+    worker = EncryptionRetraceWorker(retrace_file = "TagMapping.txt")
+   # worker = DictRetraceWorker(retrace_file = "TagMapping.txt")
     retracer = Retrace(worker, "./")
     retracer.run()
